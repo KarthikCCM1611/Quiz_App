@@ -1,0 +1,20 @@
+<!-- Select View -->
+@if (view() === 'select') {
+<app-select-quiz (startQuiz)="startQuiz($event)"></app-select-quiz>
+}
+
+<!-- Quiz View -->
+@if (view() === 'quiz') {
+<app-quiz-question [questionCount]="questionCount" [currentIndex]="currentIndex" (submitQuiz)="submitQuiz($event)">
+</app-quiz-question>
+}
+
+<!-- Results View -->
+@if (view() === 'results') {
+<app-quiz-results [quizResult]="quizResult" (resetQuiz)="resetQuiz()" (setView)="setView($event)"></app-quiz-results>
+}
+
+<!-- Review View -->
+@if (view() === 'review') {
+<app-quiz-review [quizResult]="quizResult" (resetQuiz)="resetQuiz()" (setView)="setView($event)"></app-quiz-review>
+}

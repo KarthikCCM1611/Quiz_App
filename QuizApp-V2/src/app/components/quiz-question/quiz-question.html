@@ -1,0 +1,133 @@
+@if (currentQuestion()) {
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100" style="font-family: 'Inter', sans-serif">
+    <div class="container mx-auto px-4 py-6 max-w-3xl">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-teal-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-trophy text-white text-sm"></i>
+                </div>
+                <span class="text-lg font-bold text-slate-800">QuizMaster</span>
+            </div>
+
+            <div class="flex items-center gap-2 text-slate-600">
+                <span class="bg-teal-100 text-teal-700 px-4 py-2 rounded-lg font-semibold">
+                    {{ currentIndex() + 1 }} / {{ questions().length }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="h-2 bg-slate-200 rounded-full mb-6 overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all duration-500"
+                [style.width.%]="((currentIndex() + 1) / questions().length) * 100"></div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="bg-white rounded-3xl shadow-xl p-6 md:p-8 mb-6">
+
+            <div class="flex items-center gap-2 mb-4">
+                <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm font-medium">
+                    {{ currentQuestion().category }}
+                </span>
+
+                <span class="px-3 py-1 rounded-full text-sm font-medium" [ngClass]="{
+                  'bg-green-100 text-green-700': currentQuestion().difficulty === 'easy',
+                  'bg-yellow-100 text-yellow-700': currentQuestion().difficulty === 'medium',
+                  'bg-red-100 text-red-700': currentQuestion().difficulty === 'hard'
+                }">
+                    {{ currentQuestion().difficulty | titlecase }}
+                </span>
+            </div>
+
+            <h2 class="text-xl md:text-2xl font-bold text-slate-800 mb-6">
+                {{ currentQuestion().title }}
+            </h2>
+
+            <!-- Options -->
+            <div class="space-y-3">
+                @for (option of options; track option) {
+
+                <button (click)="selectAnswer(option)"
+                    class="w-full p-4 rounded-xl border-2 text-left transition-all flex items-center gap-4" [ngClass]="{
+                    'border-teal-500 bg-teal-50': currentAnswer() === option,
+                    'border-slate-200 hover:border-slate-300 hover:bg-slate-50': currentAnswer() !== option
+                  }">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm" [ngClass]="{
+                      'bg-teal-500 text-white': currentAnswer() === option,
+                      'bg-slate-100 text-slate-600': currentAnswer() !== option
+                    }">
+                        {{ option.toUpperCase() }}
+                    </div>
+
+                    <span class="flex-1 font-medium" [ngClass]="{
+                      'text-teal-700': currentAnswer() === option,
+                      'text-slate-700': currentAnswer() !== option
+                    }">
+                        {{ currentQuestion().options[option] }}
+                    </span>
+
+                    @if (currentAnswer() === option) {
+                    <i class="fas fa-check-circle text-teal-500"></i>
+                    }
+                </button>
+
+                }
+            </div>
+        </div>
+
+        <!-- Warning -->
+        @if (showWarning()) {
+        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-6 flex items-center gap-3">
+            <i class="fas fa-exclamation-circle text-orange-500"></i>
+            <p class="text-orange-700 font-medium">
+                Please answer all questions before submitting
+            </p>
+        </div>
+        }
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between gap-4">
+
+            <button (click)="prevQuestion()" [disabled]="currentIndex() === 0"
+                class="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium">
+                <i class="fas fa-chevron-left text-sm"></i>
+                Previous
+            </button>
+
+            @if (currentIndex() === questions().length - 1) {
+            <button (click)="submitQuizz()"
+                class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all font-semibold shadow-lg">
+                Submit Quiz
+                <i class="fas fa-check-circle"></i>
+            </button>
+            } @else {
+            <button (click)="nextQuestion()"
+                class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl hover:from-teal-700 hover:to-cyan-700 transition-all font-semibold">
+                Next
+                <i class="fas fa-chevron-right text-sm"></i>
+            </button>
+            }
+
+        </div>
+
+        <!-- Question Dots -->
+        <div class="flex justify-center gap-2 mt-6 flex-wrap">
+            @for (q of questions(); track $index; let i = $index) {
+
+            <button (click)="setCurrentIndex(i)" class="w-8 h-8 rounded-lg font-medium text-sm transition-all"
+                [ngClass]="{
+                  'bg-teal-500 text-white': currentIndex() === i,
+                  'bg-teal-100 text-teal-700': currentIndex() !== i && userAnswers()[i]?.selectedAnswer,
+                  'bg-slate-100 text-slate-500': currentIndex() !== i && !userAnswers()[i]?.selectedAnswer
+                }">
+                {{ i + 1 }}
+            </button>
+
+            }
+        </div>
+
+    </div>
+</div>
+}
